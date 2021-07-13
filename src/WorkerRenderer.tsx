@@ -1,13 +1,11 @@
 import React, {useMemo, useEffect} from 'react';
 import {createWorkerFactory, expose} from '@remote-ui/web-workers';
 import {RemoteReceiver, RemoteRenderer, useWorker} from '@remote-ui/react/host';
-import {Card, Button} from './components';
+import proxyComponentsFactory from './poc/proxyComponents';
 
 const createWorker = createWorkerFactory(() =>
   import(/* webpackChunkName: 'sandbox' */ './sandbox'),
 );
-
-const COMPONENTS = {Card, Button};
 
 export function WorkerRenderer({script}: {script: URL}) {
   const receiver = useMemo(() => new RemoteReceiver(), []);
@@ -30,5 +28,5 @@ export function WorkerRenderer({script}: {script: URL}) {
     });
   }, [receiver, worker, script]);
 
-  return <RemoteRenderer receiver={receiver} components={COMPONENTS} />;
+  return <RemoteRenderer receiver={receiver} components={proxyComponentsFactory()} />;
 }
