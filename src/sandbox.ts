@@ -6,12 +6,12 @@ import {
 
 import {endpoint} from '@remote-ui/web-workers/worker';
 
-import {Card, Button, User, RenderCallback} from './worker/api';
+import { HostProps, RenderCallback} from './global-api';
 
 // By default, a worker can’t call anything on the main thread. This method indicates
-// that the worker expects the main thread to expose an `authenticatedFetch()` function,
+// that the worker expects the main thread to expose an `doSomethingOnMainThread()` function,
 // which we will use below.
-endpoint.callable('authenticatedFetch');
+endpoint.callable('doSomethingOnMainThread');
 
 let renderCallback: RenderCallback | undefined;
 
@@ -25,16 +25,16 @@ Reflect.defineProperty(self, 'onRender', {
   writable: false,
 });
 
-// We also expose an additional global method, self.authenticatedFetch(). This function
-// will call the `authenticatedFetch()` function exposed by the main thread in
+// We also expose an additional global method, self.doSomethingOnMainThread(). This function
+// will call the `doSomethingOnMainThread()` function exposed by the main thread in
 // `WorkerRenderer`.
-Reflect.defineProperty(self, 'authenticatedFetch', {
-  value: (httpEndpoint: string) => (endpoint.call as {authenticatedFetch(httpEndpoint: string): Promise<any>}).authenticatedFetch(httpEndpoint),
+Reflect.defineProperty(self, 'doSomethingOnMainThread', {
+  value: (httpEndpoint: string) => (endpoint.call as {doSomethingOnMainThread(httpEndpoint: string): Promise<any>}).doSomethingOnMainThread(httpEndpoint),
   writable: false,
 });
 
 // This method will be exposed to the worker thread by 
-export function run(script: string, channel: RemoteChannel, user: User) {
+export function run(script: string, channel: RemoteChannel, hostProps: HostProps) {
   // `channel` is a function, which is proxied over from the main thread. If you ever
   // "hold on" to a function you receive this way in order to call it later, you
   // **must** call `retain()` in order to prevent it from being automatically garbage
@@ -42,7 +42,7 @@ export function run(script: string, channel: RemoteChannel, user: User) {
   retain(channel);
 
   // `user` contains functions, so it also needs to be retained.
-  retain(user);
+  retain(hostProps);
 
   importScripts(script);
 
@@ -50,7 +50,7 @@ export function run(script: string, channel: RemoteChannel, user: User) {
     throw new Error(`The ${script} script did not register a callback to render UI. Make sure that code runs self.onRender().`)
   }
 
-  const root = createRemoteRoot(channel, {components: [Card, Button]});
+  const root = createRemoteRoot(channel, {components: []});
 
-  renderCallback(root, user);
+  renderCallback(root, hostProps);
 }
