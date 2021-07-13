@@ -20,12 +20,12 @@ export const Card = createRemoteReactComponent<'Card', CardProps>('Card');
 
 // Global API
 
-export interface User {
+export interface HostProps {
   id: string;
   getDetails(): Promise<{occupation?: string}>;
 }
 
-export type RenderCallback = (root: RemoteRoot, user: User) => void;
+export type RenderCallback = (root: RemoteRoot, hostProps: HostProps) => void;
 
 export interface GlobalApi {
   onRender(renderer: RenderCallback): void;

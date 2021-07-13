@@ -2,7 +2,7 @@ import React, {SyntheticEvent, useState} from 'react';
 import {render} from '@remote-ui/react';
 import { onRender } from './api';
 
-onRender((root, _user) => {
+onRender((root, hostProps) => {
   render(<WorkerApp/>, root);
 });
 

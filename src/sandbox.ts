@@ -6,7 +6,7 @@ import {
 
 import {endpoint} from '@remote-ui/web-workers/worker';
 
-import {Card, Button, User, RenderCallback} from './worker/api';
+import {Card, Button, HostProps, RenderCallback} from './worker/api';
 
 // By default, a worker can’t call anything on the main thread. This method indicates
 // that the worker expects the main thread to expose an `authenticatedFetch()` function,
@@ -34,7 +34,7 @@ Reflect.defineProperty(self, 'authenticatedFetch', {
 });
 
 // This method will be exposed to the worker thread by 
-export function run(script: string, channel: RemoteChannel, user: User) {
+export function run(script: string, channel: RemoteChannel, hostProps: HostProps) {
   // `channel` is a function, which is proxied over from the main thread. If you ever
   // "hold on" to a function you receive this way in order to call it later, you
   // **must** call `retain()` in order to prevent it from being automatically garbage
@@ -42,7 +42,7 @@ export function run(script: string, channel: RemoteChannel, user: User) {
   retain(channel);
 
   // `user` contains functions, so it also needs to be retained.
-  retain(user);
+  retain(hostProps);
 
   importScripts(script);
 
@@ -52,5 +52,5 @@ export function run(script: string, channel: RemoteChannel, user: User) {
 
   const root = createRemoteRoot(channel, {components: [Card, Button]});
 
-  renderCallback(root, user);
+  renderCallback(root, hostProps);
 }
