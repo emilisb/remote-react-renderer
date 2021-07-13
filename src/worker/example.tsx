@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {SyntheticEvent, useState} from 'react';
 import {render} from '@remote-ui/react';
 import { onRender } from './api';
 
@@ -7,19 +7,30 @@ onRender((root, _user) => {
 });
 
 function WorkerApp() {
-  const [count, setCount] = useState(0);
+  const [clicks, setClicks] = useState({
+    button: 0,
+    div1: 0
+  });
 
+  const eventHandlerFactory = (key: keyof typeof clicks) => (event: SyntheticEvent) => {
+    setClicks((clicks) => ({
+      ...clicks,
+      [key]: clicks[key] + 1
+    }))
+  }
   return (
-    // <Card>
-    //   Welcome, user {user.id}!{' '}
-    //   You’ve clicked {count} {count === 1 ? 'time' : 'times'} (from a worker!){' '}
-    //   <Button onPress={() => setCount((count) => count + 1)}>Plus one</Button>{' '}
-    //   <Button onPress={() => user.getDetails().then(log)}>Fetch user details</Button>{' '}
-    //   <Button onPress={() => (self as any).authenticatedFetch('/products.json').then((log))}>Authenticated fetch</Button>
-    // </Card>
-      <div>
-        <h1>{'hello world'}</h1>
-        <button data-eject={true} onClick={() => setCount((count) => count + 1)}>{`clicked ${count}`}</button>
+    <div>
+      <h2>interact</h2>
+      <div onClick={eventHandlerFactory('div1')} style={{background: 'lime', padding: '5px', width: '50%'}}>
+        <button data-eject={true} onClick={eventHandlerFactory('button')}>click</button>
       </div>
+      <h2>state report</h2>
+      <div>
+        button was clicked {clicks.button} times
+      </div>
+      <div>
+        <span style={{background: 'lime'}}>lime</span> div was clicked {clicks.div1} times
+      </div>
+    </div>
   );
 }
