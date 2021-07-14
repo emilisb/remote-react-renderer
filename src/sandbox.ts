@@ -6,7 +6,7 @@ import {
 
 import {endpoint} from '@remote-ui/web-workers/worker';
 
-import { HostProps, RenderCallback} from './worker/api';
+import { HostProps, RenderCallback} from './global-api';
 
 // By default, a worker can’t call anything on the main thread. This method indicates
 // that the worker expects the main thread to expose an `doSomethingOnMainThread()` function,

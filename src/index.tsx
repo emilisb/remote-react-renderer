@@ -1,18 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {createPlainWorkerFactory} from '@remote-ui/web-workers';
-import {WorkerRenderer} from './WorkerRenderer';
+import { createPlainWorkerFactory, createWorkerFactory } from '@remote-ui/web-workers';
 
-// This utility creates a "plain" worker. It’s just a shortcut to creating
-// a JavaScript file that supports being run in a worker, without needing
-// a separate asset server or other configuration.
-const createExampleWorker = createPlainWorkerFactory(() =>
-  import(/* webpackChunkName: 'example' */ './worker/example'),
-);
+const noop = (..._args: any[]) => () => {}
 
-ReactDOM.render(
-  <React.StrictMode>
-    <WorkerRenderer script={createExampleWorker.url!} />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const foo = noop(createPlainWorkerFactory(() =>
+  import(/* webpackChunkName: 'foo' */ './components/foo'),
+));
+
+foo()
+
+const bar = noop(createPlainWorkerFactory(() =>
+  import(/* webpackChunkName: 'bar' */ './components/bar'),
+));
+
+bar()
+
+const sandbox = noop(createWorkerFactory(() =>
+  import(/* webpackChunkName: 'sandbox' */ './sandbox'),
+));
+
+sandbox()
+

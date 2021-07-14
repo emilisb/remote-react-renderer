@@ -1,10 +1,7 @@
 import React, {useState} from 'react';
 import {render} from '@remote-ui/react';
-import { onRender } from './api';
+import { onRender } from '../global-api';
 
-onRender((root, hostProps) => {
-  render(<WorkerApp/>, root);
-});
 
 function WorkerApp() {
   const [clicks, setClicks] = useState({
@@ -42,3 +39,7 @@ function WorkerApp() {
     </div>
   );
 }
+
+onRender((root, hostProps) => {
+  render(<></>, root);
+});
