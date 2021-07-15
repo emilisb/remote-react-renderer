@@ -1,9 +1,6 @@
 import React, {useState} from 'react';
-import {render} from '@remote-ui/react';
-import { onRender } from '../global-api';
 
-
-function WorkerApp() {
+function ExampleApp({hostProps}: any) {
   const [clicks, setClicks] = useState({
     button: 0,
     div1: 0
@@ -40,6 +37,4 @@ function WorkerApp() {
   );
 }
 
-onRender((root, hostProps) => {
-  render(<></>, root);
-});
+export default ExampleApp
