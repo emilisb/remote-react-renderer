@@ -25,7 +25,7 @@ const createLibIndexContent = (entiresData /* Array<{ name }> */) => {
   const compEntry = (componentName) =>
     `createPlainWorkerFactory(() => import(/* webpackChunkName: '${componentName}' */ './${componentName}'))`;
   return [
-    `import { createPlainWorkerFactory, createWorkerFactory } from '@remote-ui/web-workers';`,
+    `import { createPlainWorkerFactory } from '@remote-ui/web-workers';`,
     ...entiresData.map(({ name }) => compEntry(name)),
   ].join("\n");
 };
