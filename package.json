@@ -70,11 +70,14 @@
     "webpack-manifest-plugin": "2.2.0",
     "workbox-webpack-plugin": "4.3.1"
   },
+  "files": [
+    "build"
+  ],
   "scripts": {
     "lib": "node scripts/generate-lib",
     "prestart": "npm run lib",
     "start": "node scripts/start",
-    "prebuid": "npm run lib",
+    "prebuild": "npm run lib",
     "build": "node scripts/build",
     "test": "rnode scripts/test"
   },
