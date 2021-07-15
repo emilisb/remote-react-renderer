@@ -24,3 +24,4 @@ yarn-error.log*
 
 # auto-generated
 src/lib
+.vercel
