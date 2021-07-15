@@ -33,12 +33,18 @@ module.exports = {
 
     for (const rule of rules) {
       if (isBabelRule(rule)) {
+        if (!rule.options.presets) {
+          rule.options.presets = []
+        }
         rule.options.presets.push(customPreset);
       }
 
       if ('oneOf' in rule) {
         for (const nestedRule of rule.oneOf) {
           if (isBabelRule(nestedRule)) {
+            if (!nestedRule.options.presets) {
+              nestedRule.options.presets = []
+            }
             nestedRule.options.presets.push(customPreset);
           }
         }
