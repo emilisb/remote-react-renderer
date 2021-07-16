@@ -62,7 +62,10 @@ export function run(script: string, channel: RemoteChannel, hostProps: HostProps
   }
 
   if (_state.url !== script) {
+    
     importScripts(script);
+
+    _state.url = `${script}`
   }
 
   if (renderCallback == null) {
