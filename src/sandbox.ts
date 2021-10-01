@@ -48,7 +48,6 @@ export async function run(
 ) {
   if (_state.firstRun) {
     const wixCodeNamespaces = await buildWixCodeNamespaces();
-    // console.warn('~~~ WIX CODE NAMESPACES IN SANDBOX', wixCodeNamespaces);
 
     Reflect.defineProperty(self, '$ns', {
       value: wixCodeNamespaces,
@@ -59,16 +58,14 @@ export async function run(
     // **must** call `retain()` in order to prevent it from being automatically garbage
     // collected.
     retain(channel);
-
-    // `hostProps` contains functions, so it also needs to be retained.
-    _state.prevProps = retain(hostProps) && hostProps;
   } else {
-    retain(hostProps);
-
     if (_state.prevProps) {
       release(_state.prevProps);
     }
   }
+
+  // `hostProps` contains functions, so it also needs to be retained.
+  _state.prevProps = retain(hostProps) && hostProps;
 
   if (_state.url !== script) {
     importScripts(script);
@@ -82,9 +79,11 @@ export async function run(
     );
   }
 
-  const root = createRemoteRoot(channel, {components: []});
+  if (_state.firstRun) {
+    const root = createRemoteRoot(channel, {components: []});
 
-  renderCallback(root, hostProps);
+    renderCallback(root, hostProps);
 
-  _state.firstRun = false;
+    _state.firstRun = false;
+  }
 }
