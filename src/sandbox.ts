@@ -49,6 +49,90 @@ export async function run(
   if (_state.firstRun) {
     const wixCodeNamespaces = await buildWixCodeNamespaces();
 
+    const document = {
+      body: {
+        appendChild: () => {
+          console.warn(
+            'Invoking unimplemented method `document.body.appendChild`'
+          );
+        },
+        removeChild: () => {
+          console.warn(
+            'Invoking unimplemented method `document.body.removeChild`'
+          );
+        },
+      },
+      createElement: () => ({
+        style: {},
+        setAttribute: () => {
+          console.warn(
+            'Invoking unimplemented method `document.createElement.setAttribute`'
+          );
+        },
+      }),
+      getElementById: () => {
+        console.warn(
+          'Invoking unimplemented method `document.body.getElementById`'
+        );
+      },
+      getElementsByTagName: () => {
+        console.warn(
+          'Invoking unimplemented method `document.body.getElementByTagName`'
+        );
+      },
+    };
+
+    Reflect.defineProperty(self, 'window', {
+      value: {
+        location: {
+          href: _state.url,
+        },
+        clipboardData: {
+          getData: () => '',
+        },
+        addEventListener: () => {
+          console.warn(
+            'Invoking unimplemented method `window.addEventListener`'
+          );
+        },
+        removeEventListener: () => {
+          console.warn(
+            'Invoking unimplemented method `window.removeEventListener`'
+          );
+        },
+        requestAnimationFrame: () => {
+          console.warn(
+            'Invoking unimplemented method `window.requestAnimationFrame`'
+          );
+        },
+        cancelAnimationFrame: () => {
+          console.warn(
+            'Invoking unimplemented method `window.cancelAnimationFrame`'
+          );
+        },
+        setTimeout: () => {
+          console.warn('Invoking unimplemented method `window.setTimeout`');
+        },
+        clearTimeout: () => {
+          console.warn('Invoking unimplemented method `window.clearTimeout`');
+        },
+        setInterval: () => {
+          console.warn('Invoking unimplemented method `window.setInterval`');
+        },
+        clearInterval: () => {
+          console.warn('Invoking unimplemented method `window.clearInterval`');
+        },
+        performance: {
+          now: () => 0,
+        },
+        document,
+      },
+    });
+
+    Reflect.defineProperty(self, 'document', {
+      value: document,
+    });
+
     Reflect.defineProperty(self, '$ns', {
       value: wixCodeNamespaces,
     });
