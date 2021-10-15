@@ -126,6 +126,8 @@ export async function run(
           now: () => 0,
         },
         document,
+        pageXOffset: 0,
+        pageYOffset: 0,
       },
     });
 
