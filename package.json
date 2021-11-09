@@ -74,6 +74,7 @@
     "build"
   ],
   "scripts": {
+    "postinstall": "node ./scripts/patch-remote-ui.js",
     "lib": "node scripts/generate-lib",
     "prestart": "npm run lib",
     "start": "node scripts/start",

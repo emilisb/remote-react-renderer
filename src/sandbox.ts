@@ -6,6 +6,7 @@ import {
 } from '@remote-ui/core';
 import {endpoint} from '@remote-ui/web-workers/worker';
 import {HostProps, RenderCallback} from './global-api';
+import {loadPartytown, requestPartytownGlobals} from './partytown';
 
 type WixCodeNamespaces = Record<string, any>;
 
@@ -47,97 +48,16 @@ export async function run(
   hostProps: HostProps
 ) {
   if (_state.firstRun) {
-    const wixCodeNamespaces = await buildWixCodeNamespaces();
-
-    const document = {
-      body: {
-        appendChild: () => {
-          console.warn(
-            'Invoking unimplemented method `document.body.appendChild`'
-          );
-        },
-        removeChild: () => {
-          console.warn(
-            'Invoking unimplemented method `document.body.removeChild`'
-          );
-        },
-      },
-      createElement: () => ({
-        style: {},
-        setAttribute: () => {
-          console.warn(
-            'Invoking unimplemented method `document.createElement.setAttribute`'
-          );
-        },
-      }),
-      getElementById: () => {
-        console.warn(
-          'Invoking unimplemented method `document.body.getElementById`'
-        );
-      },
-      getElementsByTagName: () => {
-        console.warn(
-          'Invoking unimplemented method `document.body.getElementByTagName`'
-        );
-      },
-    };
-
-    Reflect.defineProperty(self, 'window', {
-      value: {
-        location: {
-          href: _state.url,
-        },
-        clipboardData: {
-          getData: () => '',
-        },
-        addEventListener: () => {
-          console.warn(
-            'Invoking unimplemented method `window.addEventListener`'
-          );
-        },
-        removeEventListener: () => {
-          console.warn(
-            'Invoking unimplemented method `window.removeEventListener`'
-          );
-        },
-        requestAnimationFrame: () => {
-          console.warn(
-            'Invoking unimplemented method `window.requestAnimationFrame`'
-          );
-        },
-        cancelAnimationFrame: () => {
-          console.warn(
-            'Invoking unimplemented method `window.cancelAnimationFrame`'
-          );
-        },
-        setTimeout: () => {
-          console.warn('Invoking unimplemented method `window.setTimeout`');
-        },
-        clearTimeout: () => {
-          console.warn('Invoking unimplemented method `window.clearTimeout`');
-        },
-        setInterval: () => {
-          console.warn('Invoking unimplemented method `window.setInterval`');
-        },
-        clearInterval: () => {
-          console.warn('Invoking unimplemented method `window.clearInterval`');
-        },
-        performance: {
-          now: () => 0,
-        },
-        document,
-        pageXOffset: 0,
-        pageYOffset: 0,
-      },
-    });
-
-    Reflect.defineProperty(self, 'document', {
-      value: document,
-    });
+    const [, wixCodeNamespaces] = await Promise.all([
+      loadPartytown(),
+      buildWixCodeNamespaces(),
+    ]);
 
     Reflect.defineProperty(self, '$ns', {
       value: wixCodeNamespaces,
     });
+
+    console.log('~~~ SANDBOX SELF', self, self.document);
 
     // `channel` is a function, which is proxied over from the main thread. If you ever
     // "hold on" to a function you receive this way in order to call it later, you
@@ -154,6 +74,10 @@ export async function run(
   _state.prevProps = retain(hostProps) && hostProps;
 
   if (_state.url !== script) {
+    requestPartytownGlobals();
+
+    // TODO: might need to wait for PT to be set up
+
     importScripts(script);
 
     _state.url = `${script}`;
