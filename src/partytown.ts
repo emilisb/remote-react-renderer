@@ -19,9 +19,7 @@ export const loadPartytown = async () => {
   await waitForPartytownSandbox();
   console.log('~~~ PT WORKER SET');
 
-  importScripts(
-    'https://partytown-emilisb.vercel.app/debug/partytown-ww-sw.js'
-  );
+  require('./partytown-ww-sw');
 
   console.log('~~~ WAITING FOR SELF.DOCUMENT');
   await waitForPartytownGlobals();
