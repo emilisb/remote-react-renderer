@@ -19,7 +19,7 @@ export const loadPartytown = async () => {
   await waitForPartytownSandbox();
   console.log('~~~ PT WORKER SET');
 
-  require('./partytown-ww-sw');
+  require('./vendor/partytown-ww-sw');
 
   console.log('~~~ WAITING FOR SELF.DOCUMENT');
   await waitForPartytownGlobals();
@@ -47,7 +47,7 @@ const waitForPartytownGlobals = async () => {
         clearInterval(interval);
         resolve();
       }
-    }, 100);
+    }, 10);
   });
 };
 

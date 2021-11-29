@@ -1,9 +1,11 @@
+import React, {ReactElement} from 'react';
 import {
   retain,
   createRemoteRoot,
   RemoteChannel,
   release,
 } from '@remote-ui/core';
+import {render as remoteRender} from '@remote-ui/react';
 import {endpoint} from '@remote-ui/web-workers/worker';
 import {HostProps, RenderCallback} from './global-api';
 import {loadPartytown, requestPartytownGlobals} from './partytown';
@@ -14,6 +16,14 @@ interface RemoteCallable {
   getWixCodeNamespaces(): Promise<WixCodeNamespaces>;
 }
 
+declare const self: DedicatedWorkerGlobalScope & {
+  document: Document;
+  React: typeof React;
+  remoteReactApi: {
+    register: typeof register;
+  };
+};
+
 // By default, a worker can’t call anything on the main thread. This method indicates
 // that the worker expects the main thread to expose an `doSomethingOnMainThread()` function,
 // which we will use below.
@@ -21,15 +31,14 @@ endpoint.callable('getWixCodeNamespaces');
 
 let renderCallback: RenderCallback | undefined;
 
-// We bring third-party code into the environment by running `importScripts()` below.
-// We expect that code to call `self.onRender`, which we define below, to register
-// to receive the `RemoteRoot` object it needs to start rendering.
-Reflect.defineProperty(self, 'onRender', {
-  value: (callback: RenderCallback) => {
-    renderCallback = callback;
-  },
-  writable: false,
-});
+const register = (withUserComp: (props: unknown) => ReactElement): void => {
+  renderCallback = (root, hostProps) =>
+    remoteRender(withUserComp(hostProps), root);
+};
+
+self.remoteReactApi = {
+  register,
+};
 
 const buildWixCodeNamespaces = async () => {
   return (endpoint.call as RemoteCallable).getWixCodeNamespaces();
@@ -64,6 +73,10 @@ export async function run(
     // **must** call `retain()` in order to prevent it from being automatically garbage
     // collected.
     retain(channel);
+
+    importScripts(
+      'https://static.parastorage.com/unpkg/react@16.13.1/umd/react.development.js'
+    );
   } else {
     if (_state.prevProps) {
       release(_state.prevProps);
