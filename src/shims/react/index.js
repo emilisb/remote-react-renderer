@@ -2,7 +2,7 @@
 
 if (process.env.NODE_ENV === 'production') {
   importScripts(
-    'https://static.parastorage.com/unpkg/react@16.13.1/umd/react.production.js'
+    'https://static.parastorage.com/unpkg/react@16.13.1/umd/react.production.min.js'
   );
 } else {
   importScripts(
