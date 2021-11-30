@@ -1,0 +1,7 @@
+{
+  "name": "react",
+  "version": "16.14.0",
+  "private": true,
+  "main": "./index.js",
+  "module": "./index.js"
+}

@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   webpack: function (config) {
     const {WebWorkerPlugin} = require('@remote-ui/web-workers/webpack');
@@ -10,6 +12,11 @@ module.exports = {
     // this webpack plugin does.
     config.plugins.unshift(new WebWorkerPlugin());
 
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      react: path.resolve(__dirname, '../src/shims/react/'),
+    };
+
     const {rules} = config.module;
 
     // For some reason, I can’t get the ESLint rules to stop giving build errors,
@@ -19,8 +26,8 @@ module.exports = {
         rule.use &&
           rule.use[0] &&
           typeof rule.use[0].loader === 'string' &&
-          rule.use[0].loader.includes('eslint-loader'),
-      ),
+          rule.use[0].loader.includes('eslint-loader')
+      )
     );
     rules.splice(eslintLoaderIndex, 1);
 
@@ -34,7 +41,7 @@ module.exports = {
     for (const rule of rules) {
       if (isBabelRule(rule)) {
         if (!rule.options.presets) {
-          rule.options.presets = []
+          rule.options.presets = [];
         }
         rule.options.presets.push(customPreset);
       }
@@ -43,7 +50,7 @@ module.exports = {
         for (const nestedRule of rule.oneOf) {
           if (isBabelRule(nestedRule)) {
             if (!nestedRule.options.presets) {
-              nestedRule.options.presets = []
+              nestedRule.options.presets = [];
             }
             nestedRule.options.presets.push(customPreset);
           }

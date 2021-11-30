@@ -73,10 +73,6 @@ export async function run(
     // **must** call `retain()` in order to prevent it from being automatically garbage
     // collected.
     retain(channel);
-
-    importScripts(
-      'https://static.parastorage.com/unpkg/react@16.13.1/umd/react.development.js'
-    );
   } else {
     if (_state.prevProps) {
       release(_state.prevProps);
