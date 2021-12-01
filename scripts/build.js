@@ -66,6 +66,8 @@ checkBrowsers(paths.appPath, isInteractive)
   })
   .then(
     ({ stats, previousFileSizes, warnings }) => {
+      removeStrictMode(paths.appBuild + '/static/js/sandbox.worker.js'); // Ugly hack to remove strict mode from sandbox.worker.js for PT
+
       if (warnings.length) {
         console.log(chalk.yellow('Compiled with warnings.\n'));
         console.log(warnings.join('\n\n'));
@@ -202,6 +204,12 @@ function build(previousFileSizes) {
       });
     });
   });
+}
+
+function removeStrictMode(filePath) {
+  const originalContent = fs.readFileSync(filePath, 'utf8');
+  const parsedContent = originalContent.replace(/['"]use strict['"];/g, '');
+  fs.writeFileSync(filePath, parsedContent);
 }
 
 function copyPublicFolder() {
