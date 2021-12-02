@@ -163,9 +163,20 @@ var reconciler = (0, _reactReconciler["default"])(_objectSpread(_objectSpread({
     return false;
   },
   getPublicInstance: function getPublicInstance(instance) {
-    return document.querySelector(
-      '[data-remote-ui-id="' + instance.id + '"]'
-    );
+    // Sometimes we may access the instance before it was rendered to document (due to async nature)
+    // This is an ugly workaround for that
+
+    const MAX_WAIT_TIME_MS = 1000;
+    let publicInstance;
+    let startTime = performance.now();
+
+    do {
+      publicInstance = document.querySelector(
+        '[data-remote-ui-id="' + instance.id + '"]'
+      );
+    } while (!publicInstance && performance.now() - startTime < MAX_WAIT_TIME_MS);
+
+    return publicInstance;
   },
   shouldDeprioritizeSubtree: function shouldDeprioritizeSubtree() {
     return false;

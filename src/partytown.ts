@@ -26,14 +26,23 @@ export const loadPartytown = async () => {
   console.log('~~~ SELF.DOCUMENT WAS SET');
 };
 
-export const requestPartytownGlobals = () => {
+export const requestPartytownGlobals = async () => {
   postMessage([WorkerMessageType.MainDataRequestFromWorker]);
+  await waitForPartytownMainDataResponse();
 };
 
 const waitForPartytownSandbox = async () => {
+  return waitForPartytownMessage(WorkerMessageType.InitializedSandbox);
+};
+
+const waitForPartytownMainDataResponse = async () => {
+  return waitForPartytownMessage(WorkerMessageType.MainDataResponseToWorker);
+};
+
+const waitForPartytownMessage = async (messageType: WorkerMessageType) => {
   return new Promise<void>((resolve) => {
     self.addEventListener('message', (e) => {
-      if (e.data[0] === WorkerMessageType.InitializedSandbox) {
+      if (e.data[0] === messageType) {
         resolve();
       }
     });

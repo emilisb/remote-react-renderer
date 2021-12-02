@@ -83,9 +83,7 @@ export async function run(
   _state.prevProps = retain(hostProps) && hostProps;
 
   if (_state.url !== script) {
-    requestPartytownGlobals();
-
-    // TODO: might need to wait for PT to be set up
+    await requestPartytownGlobals();
 
     importScripts(script);
 
