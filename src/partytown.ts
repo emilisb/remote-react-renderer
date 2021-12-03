@@ -8,8 +8,9 @@ enum WorkerMessageType {
   InitializeNextScript = 'pt-6',
   RefHandlerCallback = 'pt-7',
   ForwardMainTrigger = 'pt-8',
-  InitializedSandbox = 'pt-9',
-  StartedExternalWorker = 'pt-10',
+  ForwardWorkerAccessRequest = 'pt-9',
+  InitializedSandbox = 'pt-10',
+  StartedExternalWorker = 'pt-11',
 }
 
 export const loadPartytown = async () => {
